@@ -1,11 +1,13 @@
 package ph.edu.comteq.icamposroom
 
+import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 
 object DateUtils {
+
     private val dateFormat =
         SimpleDateFormat("MM dd, yyyy", Locale.getDefault())
     private val timeFormat =

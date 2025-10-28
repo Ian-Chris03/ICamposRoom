@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -174,17 +175,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NoteListScreen(viewModel: NoteViewModel, modifier: Modifier = Modifier) {
     // Get all notes from viewmodel
-    val notes by viewModel.allNotes.collectAsState(initial = emptyList())
+    val notes by viewModel.allNotesWithTags.collectAsState(initial = emptyList())
 
     LazyColumn(modifier = modifier) {
-        items(notes) { note ->
+        items(noteWithTags) { note ->
             Text(text = note.title)
         }
     }
 }
 
 @Composable
-fun NoteCard(note: Note, modifier: Modifier = Modifier) {
+fun NoteCard(note: Note,tags: List<Tag> =emptyList<>(),modifier: Modifier = Modifier) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,10 +199,23 @@ fun NoteCard(note: Note, modifier: Modifier = Modifier) {
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
             Text(
+                text = note.category
+            )
+            Text(
                 text = note.title,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
+            if(tags.isNotEmpty()){
+                FlowRow {
+                    tags.forEach {
+                        Text(
+
+                        )
+                    }
+                }
+            }
+
         }
     }
 }
