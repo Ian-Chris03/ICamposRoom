@@ -27,16 +27,37 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // NEW: All notes WITH their tags
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val notesWithTags: Flow<List<NoteWithTags>> = searchQuery.flatMapLatest { query ->
+        if (query.isBlank()) {
+            noteDao.getAllNotesWithTags()
+        } else {
+            noteDao.searchNotesWithTags(query)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val searchResults: Flow<List<NoteWithTags>> = searchQuery.flatMapLatest { query ->
+        if (query.isBlank()) {
+            flowOf(emptyList()) // Return empty list if query is blank
+        } else {
+            noteDao.searchNotesWithTags(query)
+        }
+    }
 
 
     // Called when user types in search box
-    fun updateSearchQuery(query: String) {
+    fun searchNotes(query: String) {
         _searchQuery.value = query
     }
-
-    // Called to clear the search
-    fun clearSearch() {
-        _searchQuery.value = ""
+    
+    fun saveNote(note: Note) = viewModelScope.launch {
+        if (note.id == 0) {
+            insert(note)
+        } else {
+            update(note)
+        }
     }
 
     fun insert(note: Note) = viewModelScope.launch {
@@ -50,8 +71,10 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
     fun delete(note: Note) = viewModelScope.launch {
         noteDao.deleteNote(note)
     }
-    // NEW: All notes WITH their tags
-    val allNotesWithTags: Flow<List<NoteWithTags>> = noteDao.getAllNotesWithTags()
+
+    fun deleteNoteById(noteId: Int) = viewModelScope.launch {
+        noteDao.deleteNoteById(noteId)
+    }
 
     suspend fun getNoteById(id: Int): Note? {
         return noteDao.getNoteById(id)
@@ -92,4 +115,3 @@ class NoteViewModel(application: Application) : AndroidViewModel(application) {
         return noteDao.getNotesWithTag(tagId)
     }
 }
-
